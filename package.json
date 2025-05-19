@@ -2,6 +2,36 @@
   "type": "module",
   "dependencies": {
     "colors": "^1.4.0",
+    "dotenv": "^16.5.0",
     "express": "^5.1.0"
+  },
+  "name": "themisback",
+  "version": "1.0.0",
+  "description": "BackEnd para la plataforma themis",
+  "main": "index.js",
+  "scripts": {
+    "dev": "SET DEBUG=app:* & nodemon index",
+    "start": "SET NODE_ENV=production & node index",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ju4ncb/themisBack.git"
+  },
+  "author": "ju4ncb",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ju4ncb/themisBack/issues"
+  },
+  "homepage": "https://github.com/ju4ncb/themisBack#readme",
+  "devDependencies": {
+    "eslint": "^9.27.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.4.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.5.3"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix"
   }
 }
