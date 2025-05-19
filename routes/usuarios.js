@@ -43,7 +43,9 @@ const usuariosAPI = (app) => {
       }
       res.json(rows[0]);
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener el usuario' });
+      res
+        .status(500)
+        .json({ error: 'Error al obtener el usuario', errorMssg: error });
     }
   });
 
