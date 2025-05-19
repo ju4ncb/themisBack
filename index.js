@@ -4,6 +4,7 @@ import config from './server.js';
 import usuariosAPI from './routes/usuarios.js';
 
 const server = express();
+process.env.TZ = 'America/Bogota';
 
 server.listen(3000, () => {
   console.log(

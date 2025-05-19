@@ -11,6 +11,7 @@ if (process.env.NODE_ENV !== 'production') {
     DB_USER: 'root',
     DB_PASSWORD: '',
     DB_NAME: 'themis',
+    DB_TZ: '-05:00',
   };
 } else {
   config = {
@@ -20,6 +21,7 @@ if (process.env.NODE_ENV !== 'production') {
     DB_USER: 'if0_39019153',
     DB_PASSWORD: 'iZQyY4TbZP1ijY',
     DB_NAME: 'if0_39019153_themis',
+    DB_TZ: '-05:00',
   };
 }
 
