@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import UsuariosService from '../services/usuariosService.js';
+import config from '../server.js';
+import bcrypt from 'bcrypt';
 
 const router = Router();
 
@@ -13,9 +15,8 @@ const usuariosAPI = (app) => {
       const usuarios = await usuariosService.getUsuarios();
       res.json(usuarios);
     } catch (error) {
-      res
-        .status(500)
-        .json({ error: 'Error al obtener los usuarios', errorMssg: error });
+      console.log(error);
+      res.status(500).json({ error: 'Error al obtener los usuarios' });
     }
   });
 
@@ -30,9 +31,37 @@ const usuariosAPI = (app) => {
       }
       res.json(usuario);
     } catch (error) {
-      res
-        .status(500)
-        .json({ error: 'Error al obtener el usuario', errorMssg: error });
+      console.log(error);
+      res.status(500).json({ error: 'Error al obtener el usuario' });
+    }
+  });
+
+  // Iniciar sesión
+  router.post('/login', async (req, res) => {
+    const { nombreusuario, contrasena } = req.body;
+
+    try {
+      const usuario = await usuariosService.getUsuario(nombreusuario);
+      if (!usuario) {
+        return res
+          .status(401)
+          .json({ error: 'Usuario o contraseña incorrectos' });
+      }
+
+      const contrasenaValida = await bcrypt.compare(
+        contrasena,
+        usuario.contrasena_hash,
+      );
+      if (!contrasenaValida) {
+        return res
+          .status(401)
+          .json({ error: 'Usuario o contraseña incorrectos' });
+      }
+
+      res.status(201).json(usuario);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Error al iniciar sesión' });
     }
   });
 
@@ -45,12 +74,16 @@ const usuariosAPI = (app) => {
       direccion,
       telefono,
       correo,
-      contrasena_hash,
+      contrasena,
       id_rol,
     } = req.body;
 
     try {
-      const usuario = await usuariosService.createUsuario(
+      // Hash de la contraseña antes de guardar
+      const saltRounds = config.SALT_ROUNDS;
+      const contrasena_hash = await bcrypt.hash(contrasena, saltRounds);
+
+      const usuario = await usuariosService.createUsuario({
         nombreusuario,
         nombres,
         apellidos,
@@ -59,12 +92,11 @@ const usuariosAPI = (app) => {
         correo,
         contrasena_hash,
         id_rol,
-      );
+      });
       res.status(201).json(usuario);
     } catch (error) {
-      res
-        .status(500)
-        .json({ error: 'Error al crear el usuario', errorMssg: error });
+      console.log(error);
+      res.status(500).json({ error: 'Error al crear el usuario' });
     }
   });
 
@@ -76,11 +108,13 @@ const usuariosAPI = (app) => {
       direccion,
       telefono,
       correo,
-      contrasena_hash,
+      contrasena,
       id_rol,
     } = req.body;
 
     try {
+      const saltRounds = config.SALT_ROUNDS;
+      const contrasena_hash = await bcrypt.hash(contrasena, saltRounds);
       const nombreusuario = req.params.nombreusuario;
       const usuario = {
         nombres,
@@ -95,11 +129,10 @@ const usuariosAPI = (app) => {
         nombreusuario,
         usuario,
       );
-      res.json(usuarioNuevo);
+      res.status(201).json(usuarioNuevo);
     } catch (error) {
-      res
-        .status(500)
-        .json({ error: 'Error al actualizar el usuario', errorMssg: error });
+      console.log(error);
+      res.status(500).json({ error: 'Error al actualizar el usuario' });
     }
   });
 
@@ -110,9 +143,8 @@ const usuariosAPI = (app) => {
       await usuariosService.deleteUsuario(nombreusuario);
       res.status(204).send();
     } catch (error) {
-      res
-        .status(500)
-        .json({ error: 'Error al eliminar el usuario', errorMssg: error });
+      console.log(error);
+      res.status(500).json({ error: 'Error al eliminar el usuario' });
     }
   });
 };

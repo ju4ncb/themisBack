@@ -3,8 +3,16 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import config from './server.js';
 import usuariosAPI from './routes/usuarios.js';
+import cors from 'cors';
+
+const corsOptions = {
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
 
 const server = express();
+server.use(cors(corsOptions));
 server.use(bodyParser.json());
 process.env.TZ = 'America/Bogota';
 
