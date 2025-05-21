@@ -3,6 +3,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import config from './server.js';
 import usuariosAPI from './routes/usuarios.js';
+import resultadosMLApi from './routes/resultadosML.js';
+import archivosSalarialesApi from './routes/archivosSalariales.js';
 import cors from 'cors';
 
 const corsOptions = {
@@ -23,7 +25,10 @@ server.listen(3000, () => {
   );
 });
 
+// Cargar apis
 usuariosAPI(server);
+resultadosMLApi(server);
+archivosSalarialesApi(server);
 
 server.get('/', (req, res) => {
   res.send('<h1>Prueba</h1>');

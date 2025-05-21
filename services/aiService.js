@@ -30,22 +30,11 @@ class AIService {
       throw new Error('No data found for the given file ID');
     }
 
-    // Build data array with only selected columns
-    const selectedColumns = [...features, target, sensitiveFeature];
-    const filteredData = rawData.map((row) =>
-      selectedColumns.map((col) => row[col]),
-    );
-
-    const dataframeLike = {
-      columns: selectedColumns,
-      data: filteredData,
-    };
-
     const response = await axios.post(`${FLASK_API_BASE}/run_model`, {
       modelType,
       target,
       features,
-      data: dataframeLike,
+      data: rawData,
       sensitiveFeature,
     });
 

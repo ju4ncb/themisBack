@@ -58,7 +58,7 @@ class UsuariosService {
     return { id_usuario: result.insertId, ...usuario };
   }
 
-  async updateUsuarioPorNombreUsuario(nombreusuario, usuario) {
+  async updateUsuario(nombreusuario, usuario) {
     const {
       nombreusuario: nuevoNombreusuario,
       nombres,

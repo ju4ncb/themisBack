@@ -20,6 +20,48 @@ const usuariosAPI = (app) => {
     }
   });
 
+  // Obtener la cantidad de usuarios
+  router.get('/count', async (req, res) => {
+    try {
+      const usuarios = await usuariosService.getUsuarios();
+      const count = Array.isArray(usuarios) ? usuarios.length : 0;
+      res.json({ count });
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .json({ error: 'Error al obtener la cantidad de usuarios' });
+    }
+  });
+
+  // Obtener la cantidad de usuarios en la última semana
+  router.get('/count-last-week', async (req, res) => {
+    try {
+      // Get current date and date 7 days ago
+      const now = new Date();
+      const lastWeek = new Date(now);
+      lastWeek.setDate(now.getDate() - 7);
+
+      // Get all usuarios
+      const usuarios = await usuariosService.getUsuarios();
+
+      // Filter by last week
+      const count = Array.isArray(usuarios)
+        ? usuarios.filter((r) => {
+            const created_at = new Date(r.created_at);
+            return created_at >= lastWeek && created_at <= now;
+          }).length
+        : 0;
+
+      res.json({ count });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        error: 'Error al obtener la cantidad de usuarios de la última semana',
+      });
+    }
+  });
+
   // Obtener un usuario por ID usando SQL
   router.get('/:nombreusuario', async (req, res) => {
     try {
@@ -67,31 +109,22 @@ const usuariosAPI = (app) => {
 
   // Crear un nuevo usuario
   router.post('/', async (req, res) => {
-    const {
-      nombreusuario,
-      nombres,
-      apellidos,
-      direccion,
-      telefono,
-      correo,
-      contrasena,
-      id_rol,
-    } = req.body;
+    const { contrasena, nombreusuario } = req.body;
 
     try {
+      if (nombreusuario === 'count' || nombreusuario === 'count-last-week') {
+        return res
+          .status(400)
+          .json({ error: 'El nombre de usuario "count" no está permitido' });
+      }
+
       // Hash de la contraseña antes de guardar
       const saltRounds = config.SALT_ROUNDS;
       const contrasena_hash = await bcrypt.hash(contrasena, saltRounds);
 
       const usuario = await usuariosService.createUsuario({
-        nombreusuario,
-        nombres,
-        apellidos,
-        direccion,
-        telefono,
-        correo,
         contrasena_hash,
-        id_rol,
+        ...req.body,
       });
       res.status(201).json(usuario);
     } catch (error) {
@@ -102,30 +135,17 @@ const usuariosAPI = (app) => {
 
   // Actualizar un usuario
   router.put('/:nombreusuario', async (req, res) => {
-    const {
-      nombres,
-      apellidos,
-      direccion,
-      telefono,
-      correo,
-      contrasena,
-      id_rol,
-    } = req.body;
+    const { contrasena } = req.body;
 
     try {
       const saltRounds = config.SALT_ROUNDS;
       const contrasena_hash = await bcrypt.hash(contrasena, saltRounds);
       const nombreusuario = req.params.nombreusuario;
       const usuario = {
-        nombres,
-        apellidos,
-        direccion,
-        telefono,
-        correo,
         contrasena_hash,
-        id_rol,
+        ...req.body,
       };
-      const usuarioNuevo = await usuariosService.updateUsuarioPorNombreUsuario(
+      const usuarioNuevo = await usuariosService.updateUsuario(
         nombreusuario,
         usuario,
       );
