@@ -11,7 +11,7 @@ const archivosSalarialesApi = (app) => {
   router.get('/', async (req, res) => {
     try {
       const archivos = await archivosSalarialesService.getArchivosSalariales();
-      res.json(archivos);
+      res.status(201).json(archivos);
     } catch (error) {
       console.log(error);
       res
@@ -39,8 +39,12 @@ const archivosSalarialesApi = (app) => {
   // Crear un nuevo archivo salarial
   router.post('/', async (req, res) => {
     try {
+      const { registros, ...archivo } = req.body;
       const nuevoArchivo =
-        await archivosSalarialesService.createArchivoSalarial(req.body);
+        await archivosSalarialesService.createArchivoSalarial(
+          archivo,
+          registros,
+        );
       res.status(201).json(nuevoArchivo);
     } catch (error) {
       console.log(error);

@@ -27,26 +27,31 @@ class ArchivosSalarialesService {
     return rows[0];
   }
 
-  async createArchivoSalarial(archivo) {
-    const { nombre_archivo, fecha_carga, formato, id_usuario } = archivo;
+  async createArchivoSalarial(archivo, registros) {
+    const { nombre_archivo, formato, tamano, id_usuario } = archivo;
     const [result] = await pool.query(
       `INSERT INTO archivossalariales 
-                    (nombre_archivo, fecha_carga, formato, id_usuario, created_at, updated_at)
+                    (nombre_archivo, formato, tamano, id_usuario, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, ?)`,
-      [
-        nombre_archivo,
-        fecha_carga,
-        formato,
-        id_usuario,
-        new Date(),
-        new Date(),
-      ],
+      [nombre_archivo, formato, tamano, id_usuario, new Date(), new Date()],
     );
+    if (Array.isArray(registros) && registros.length > 0) {
+      const values = registros.map((registro) => [
+        result.insertId,
+        JSON.stringify(registro),
+        new Date(),
+        new Date(),
+      ]);
+      await pool.query(
+        `INSERT INTO registrossalariales (id_archivo, fila_registro, created_at, updated_at) VALUES ?`,
+        [values],
+      );
+    }
     return { id_archivo: result.insertId, ...archivo };
   }
 
   async updateArchivoSalarial(id_archivo, archivo) {
-    const { nombre_archivo, fecha_carga, formato, id_usuario } = archivo;
+    const { nombre_archivo, formato, tamano, id_usuario } = archivo;
 
     // Verificar si el archivo existe
     const [rows] = await pool.query(
@@ -61,19 +66,12 @@ class ArchivosSalarialesService {
     await pool.query(
       `UPDATE archivossalariales SET 
                     nombre_archivo = COALESCE(?, nombre_archivo),
-                    fecha_carga = COALESCE(?, fecha_carga),
                     formato = COALESCE(?, formato),
+                    tamano = COALESCE(?, tamano),
                     id_usuario = COALESCE(?, id_usuario),
                     updated_at = ?
             WHERE id_archivo = ?`,
-      [
-        nombre_archivo,
-        fecha_carga,
-        formato,
-        id_usuario,
-        new Date(),
-        id_archivo,
-      ],
+      [nombre_archivo, formato, tamano, id_usuario, new Date(), id_archivo],
     );
 
     // Devolver el archivo actualizado

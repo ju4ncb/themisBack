@@ -5,6 +5,7 @@ import config from './server.js';
 import usuariosAPI from './routes/usuarios.js';
 import resultadosMLApi from './routes/resultadosML.js';
 import archivosSalarialesApi from './routes/archivosSalariales.js';
+import registrosSalarialesApi from './routes/registrosSalariales.js';
 import cors from 'cors';
 
 const corsOptions = {
@@ -15,7 +16,7 @@ const corsOptions = {
 
 const server = express();
 server.use(cors(corsOptions));
-server.use(bodyParser.json());
+server.use(bodyParser.json({ limit: '10mb' }));
 process.env.TZ = 'America/Bogota';
 
 server.listen(3000, () => {
@@ -29,6 +30,7 @@ server.listen(3000, () => {
 usuariosAPI(server);
 resultadosMLApi(server);
 archivosSalarialesApi(server);
+registrosSalarialesApi(server);
 
 server.get('/', (req, res) => {
   res.send('<h1>Prueba</h1>');

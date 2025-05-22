@@ -28,7 +28,7 @@ const resultadosMLApi = (app) => {
       console.log(error);
       res
         .status(500)
-        .json({ error: 'Error al obtener la cantidad de usuarios' });
+        .json({ error: 'Error al obtener la cantidad de resultadosML' });
     }
   });
 
