@@ -7,6 +7,7 @@ import resultadosMLApi from './routes/resultadosML.js';
 import archivosSalarialesApi from './routes/archivosSalariales.js';
 import registrosSalarialesApi from './routes/registrosSalariales.js';
 import cors from 'cors';
+import aiAPI from './routes/ai.js';
 
 const corsOptions = {
   origin: '*',
@@ -27,6 +28,7 @@ server.listen(3000, () => {
 });
 
 // Cargar apis
+aiAPI(server);
 usuariosAPI(server);
 resultadosMLApi(server);
 archivosSalarialesApi(server);

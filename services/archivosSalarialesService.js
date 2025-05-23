@@ -19,6 +19,14 @@ class ArchivosSalarialesService {
     return rows;
   }
 
+  async getArchivosSalarialesByIdUsuario(id_usuario) {
+    const [rows] = await pool.query(
+      'SELECT * FROM archivossalariales WHERE id_usuario = ?',
+      [id_usuario],
+    );
+    return rows;
+  }
+
   async getArchivoSalarial(id_archivo) {
     const [rows] = await pool.query(
       'SELECT * FROM archivossalariales WHERE id_archivo = ?',

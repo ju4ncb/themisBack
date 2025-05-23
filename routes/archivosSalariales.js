@@ -20,6 +20,22 @@ const archivosSalarialesApi = (app) => {
     }
   });
 
+  // Obtener archivos salariales por id_usuario
+  router.get('/usuarios/:id_usuario', async (req, res) => {
+    try {
+      const archivos =
+        await archivosSalarialesService.getArchivosSalarialesByIdUsuario(
+          req.params.id_usuario,
+        );
+      res.json(archivos);
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .json({ error: 'Error al obtener los archivos salariales' });
+    }
+  });
+
   // Obtener un archivo salarial por id_archivo
   router.get('/:id_archivo', async (req, res) => {
     try {
