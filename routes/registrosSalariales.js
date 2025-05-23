@@ -54,6 +54,22 @@ const registrosSalarialesApi = (app) => {
     }
   });
 
+  // Obtener registros por id_archivo
+  router.get('/archivo/:id_archivo', async (req, res) => {
+    try {
+      const registros =
+        await registrosSalarialesService.getRegistrosByIdArchivo(
+          req.params.id_archivo,
+        );
+      res.json(registros);
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .json({ error: 'Error al obtener los registros por id_archivo' });
+    }
+  });
+
   // Crear un nuevo registro
   router.post('/', async (req, res) => {
     try {

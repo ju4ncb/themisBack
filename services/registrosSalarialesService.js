@@ -27,6 +27,14 @@ class RegistrosSalarialesService {
     return rows[0];
   }
 
+  async getRegistrosByIdArchivo(id_archivo) {
+    const [rows] = await pool.query(
+      'SELECT * FROM registrossalariales WHERE id_archivo = ?',
+      [id_archivo],
+    );
+    return rows;
+  }
+
   async createRegistroSalarial(registro) {
     const { id_archivo, fila_registro } = registro;
     const [result] = await pool.query(

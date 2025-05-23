@@ -11,7 +11,7 @@ const archivosSalarialesApi = (app) => {
   router.get('/', async (req, res) => {
     try {
       const archivos = await archivosSalarialesService.getArchivosSalariales();
-      res.status(201).json(archivos);
+      res.json(archivos);
     } catch (error) {
       console.log(error);
       res
