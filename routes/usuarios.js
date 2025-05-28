@@ -80,10 +80,11 @@ const usuariosAPI = (app) => {
 
   // Iniciar sesión
   router.post('/login', async (req, res) => {
-    const { nombreusuario, contrasena } = req.body;
+    const { usuarioOrCorreo, contrasena } = req.body;
 
     try {
-      const usuario = await usuariosService.getUsuario(nombreusuario);
+      const usuario =
+        await usuariosService.getUsuarioByCorreoOrUsuario(usuarioOrCorreo);
       if (!usuario) {
         return res
           .status(401)

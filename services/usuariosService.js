@@ -27,6 +27,14 @@ class UsuariosService {
     return rows[0];
   }
 
+  async getUsuarioByCorreoOrUsuario(correoOrUsuario) {
+    const [rows] = await pool.query(
+      'SELECT * FROM usuarios WHERE nombreusuario = ? OR correo = ?',
+      [correoOrUsuario, correoOrUsuario],
+    );
+    return rows[0];
+  }
+
   async createUsuario(usuario) {
     const {
       nombreusuario,

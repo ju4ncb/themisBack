@@ -18,7 +18,7 @@ const aiAPI = (app) => {
     } catch (error) {
       res
         .status(500)
-        .json({ error: 'Error al rescatar modelos', errorMssg: error });
+        .json({ error: 'Error al rescatar modelos', errorMssg: error.message });
     }
   });
 
@@ -39,7 +39,9 @@ const aiAPI = (app) => {
       const resultados = await aiService.runModel(req.body);
       res.status(201).json(resultados);
     } catch (error) {
-      res.status(500).json({ error: 'RunModel error', errorMssg: error });
+      res
+        .status(500)
+        .json({ error: 'Error inesperado', errorMssg: error.message });
     }
   });
   router.post('/explore', async (req, res) => {
@@ -47,7 +49,9 @@ const aiAPI = (app) => {
       const resultados = await aiService.exploreData(req.body);
       res.status(201).json(resultados);
     } catch (error) {
-      res.status(500).json({ error: 'ExploreData error', errorMssg: error });
+      res
+        .status(500)
+        .json({ error: 'ExploreData error', errorMssg: error.message });
     }
   });
 };

@@ -39,15 +39,25 @@ class AIService {
       throw new Error('No data found for the given file ID');
     }
 
-    const response = await axios.post(`${FLASK_API_BASE}/run-model`, {
-      modelType,
-      target,
-      features,
-      data: rawData.map(({ fila_registro }) => JSON.parse(fila_registro)),
-      sensitiveFeature,
-    });
-
-    return response.data;
+    try {
+      const response = await axios.post(`${FLASK_API_BASE}/run-model`, {
+        modelType,
+        target,
+        features,
+        data: rawData.map(({ fila_registro }) => JSON.parse(fila_registro)),
+        sensitiveFeature,
+      });
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        // Re-throw custom error info to be caught in the router
+        const errorMessage = error.response.data?.error || 'Bad Request';
+        const err = new Error(errorMessage);
+        err.status = 400;
+        throw err;
+      }
+      throw error;
+    }
   }
   async exploreData(body) {
     const { y, x, graphType, hue, id_archivo } = body;
