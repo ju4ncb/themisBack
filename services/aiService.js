@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise';
+import mysql, { raw } from 'mysql2/promise';
 import config from '../server.js';
 import axios from 'axios';
 
@@ -37,12 +37,15 @@ class AIService {
     if (rawData.length === 0) {
       throw new Error('No hay datos en este archivo.');
     }
-    return rawData.map(({ fila_registro }) => JSON.parse(fila_registro));
+    const rawDataParsed = rawData.map(({ fila_registro }) =>
+      JSON.parse(fila_registro),
+    );
+    return rawDataParsed;
   }
 
   async runModel(body) {
     const { id_archivo, modelType, target, features, sensitiveFeature } = body;
-    const rawData = this.getRawData(id_archivo);
+    const rawData = await this.getRawData(id_archivo);
 
     try {
       const response = await axios.post(`${FLASK_API_BASE}/run-model`, {
