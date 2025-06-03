@@ -70,7 +70,7 @@ class AIService {
 
   async univariableDataExploration(body) {
     const { x, graphType, id_archivo } = body;
-    const rawData = this.getRawData(id_archivo);
+    const rawData = await this.getRawData(id_archivo);
 
     try {
       const response = await axios.post(`${FLASK_API_BASE}/univariable`, {
@@ -93,7 +93,7 @@ class AIService {
 
   async bivariableDataExploration(body) {
     const { y, x, graphType, hue, id_archivo } = body;
-    const rawData = this.getRawData(id_archivo);
+    const rawData = await this.getRawData(id_archivo);
 
     try {
       const response = await axios.post(`${FLASK_API_BASE}/bivariable`, {
@@ -118,10 +118,10 @@ class AIService {
 
   async multivariableDataExploration(body) {
     const { cols, id_archivo } = body;
-    const rawData = this.getRawData(id_archivo);
+    const rawData = await this.getRawData(id_archivo);
 
     try {
-      const response = await axios.post(`${FLASK_API_BASE}/bivariable`, {
+      const response = await axios.post(`${FLASK_API_BASE}/multivariable`, {
         cols,
         data: rawData,
       });
