@@ -23,27 +23,33 @@ class AIService {
     const response = await axios.get(`${FLASK_API_BASE}/model-types`);
     return response.data;
   }
+
   async getGraphs() {
     const response = await axios.get(`${FLASK_API_BASE}/graph-types`);
     return response.data;
   }
-  async runModel(body) {
-    const { fileId, modelType, target, features, sensitiveFeature } = body;
+
+  async getRawData(id_archivo) {
     const [rawData] = await pool.query(
       'SELECT * FROM registrossalariales WHERE id_archivo = ?',
-      [fileId],
+      [id_archivo],
     );
-
     if (rawData.length === 0) {
-      throw new Error('No data found for the given file ID');
+      throw new Error('No hay datos en este archivo.');
     }
+    return rawData.map(({ fila_registro }) => JSON.parse(fila_registro));
+  }
+
+  async runModel(body) {
+    const { id_archivo, modelType, target, features, sensitiveFeature } = body;
+    const rawData = this.getRawData(id_archivo);
 
     try {
       const response = await axios.post(`${FLASK_API_BASE}/run-model`, {
         modelType,
         target,
         features,
-        data: rawData.map(({ fila_registro }) => JSON.parse(fila_registro)),
+        data: rawData,
         sensitiveFeature,
       });
       return response.data;
@@ -58,26 +64,75 @@ class AIService {
       throw error;
     }
   }
-  async exploreData(body) {
-    const { y, x, graphType, hue, id_archivo } = body;
-    const [rawData] = await pool.query(
-      'SELECT * FROM registrossalariales WHERE id_archivo = ?',
-      [id_archivo],
-    );
 
-    if (rawData.length === 0) {
-      throw new Error('No data found for the given file ID');
+  async univariableDataExploration(body) {
+    const { x, graphType, id_archivo } = body;
+    const rawData = this.getRawData(id_archivo);
+
+    try {
+      const response = await axios.post(`${FLASK_API_BASE}/univariable`, {
+        x,
+        graphType,
+        data: rawData,
+      });
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        // Re-throw custom error info to be caught in the router
+        const errorMessage = error.response.data?.error || 'Bad Request';
+        const err = new Error(errorMessage);
+        err.status = 400;
+        throw err;
+      }
+      throw error;
     }
+  }
 
-    const response = await axios.post(`${FLASK_API_BASE}/explore-data`, {
-      x,
-      y,
-      graphType,
-      hue,
-      data: rawData.map(({ fila_registro }) => JSON.parse(fila_registro)),
-    });
+  async bivariableDataExploration(body) {
+    const { y, x, graphType, hue, id_archivo } = body;
+    const rawData = this.getRawData(id_archivo);
 
-    return response.data;
+    try {
+      const response = await axios.post(`${FLASK_API_BASE}/bivariable`, {
+        x,
+        y,
+        graphType,
+        hue,
+        data: rawData,
+      });
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        // Re-throw custom error info to be caught in the router
+        const errorMessage = error.response.data?.error || 'Bad Request';
+        const err = new Error(errorMessage);
+        err.status = 400;
+        throw err;
+      }
+      throw error;
+    }
+  }
+
+  async multivariableDataExploration(body) {
+    const { cols, id_archivo } = body;
+    const rawData = this.getRawData(id_archivo);
+
+    try {
+      const response = await axios.post(`${FLASK_API_BASE}/bivariable`, {
+        cols,
+        data: rawData,
+      });
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        // Re-throw custom error info to be caught in the router
+        const errorMessage = error.response.data?.error || 'Bad Request';
+        const err = new Error(errorMessage);
+        err.status = 400;
+        throw err;
+      }
+      throw error;
+    }
   }
 }
 

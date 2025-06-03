@@ -44,14 +44,40 @@ const aiAPI = (app) => {
         .json({ error: 'Error inesperado', errorMssg: error.message });
     }
   });
-  router.post('/explore', async (req, res) => {
+
+  router.post('/univariable/', async (req, res) => {
     try {
-      const resultados = await aiService.exploreData(req.body);
+      const resultados = await aiService.univariableDataExploration(req.body);
       res.status(201).json(resultados);
     } catch (error) {
-      res
-        .status(500)
-        .json({ error: 'ExploreData error', errorMssg: error.message });
+      res.status(500).json({
+        error: 'UnivariableDataExploration error',
+        errorMssg: error.message,
+      });
+    }
+  });
+
+  router.post('/bivariable/', async (req, res) => {
+    try {
+      const resultados = await aiService.bivariableDataExploration(req.body);
+      res.status(201).json(resultados);
+    } catch (error) {
+      res.status(500).json({
+        error: 'BivariableDataExploration error',
+        errorMssg: error.message,
+      });
+    }
+  });
+
+  router.post('/multivariable/', async (req, res) => {
+    try {
+      const resultados = await aiService.multivariableDataExploration(req.body);
+      res.status(201).json(resultados);
+    } catch (error) {
+      res.status(500).json({
+        error: 'MultivariableDataExploration error',
+        errorMssg: error.message,
+      });
     }
   });
 };
